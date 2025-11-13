@@ -1,0 +1,152 @@
+version: '3.8'
+
+services:
+  # PostgreSQL for Meteo Service
+  postgres-meteo:
+    image: postgres:15-alpine
+    container_name: postgres-meteo
+    environment:
+      POSTGRES_DB: meteodb
+      POSTGRES_USER: meteo_user
+      POSTGRES_PASSWORD: meteo_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - meteo-data:/var/lib/postgresql/data
+    networks:
+      - irrigation-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U meteo_user -d meteodb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL for Arrosage Service
+  postgres-arrosage:
+    image: postgres:15-alpine
+    container_name: postgres-arrosage
+    environment:
+      POSTGRES_DB: arrosagedb
+      POSTGRES_USER: arrosage_user
+      POSTGRES_PASSWORD: arrosage_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - arrosage-data:/var/lib/postgresql/data
+    networks:
+      - irrigation-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U arrosage_user -d arrosagedb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Zookeeper for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - irrigation-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "2181"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: kafka
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:9093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    networks:
+      - irrigation-network
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - irrigation-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # pgAdmin (Optional - Database Management UI)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@irrigation.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - irrigation-network
+    depends_on:
+      - postgres-meteo
+      - postgres-arrosage
+
+  # Kafka UI (Optional - Kafka Management UI)
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      kafka:
+        condition: service_healthy
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9093
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - irrigation-network
+
+networks:
+  irrigation-network:
+    driver: bridge
+
+volumes:
+  meteo-data:
+    driver: local
+  arrosage-data:
+    driver: local
+  redis-data:
+    driver: local
+  pgadmin-data:
+    driver: local
