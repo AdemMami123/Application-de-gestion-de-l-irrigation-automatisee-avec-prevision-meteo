@@ -47,29 +47,62 @@ git clone <repository-url>
 cd irregation_meteo_springboot
 ```
 
-### 2. Démarrer l'Infrastructure (Docker)
+### 2. Setup du Repository de Configuration
+
+Créez le repository local pour les configurations centralisées:
+
+```powershell
+# Windows PowerShell
+mkdir $env:USERPROFILE\config-repo
+cd $env:USERPROFILE\config-repo
+git init
+git add .
+git commit -m "Initial configuration"
+```
+
+```bash
+# Linux/macOS
+mkdir ~/config-repo
+cd ~/config-repo
+git init
+git add .
+git commit -m "Initial configuration"
+```
+
+Les fichiers de configuration sont déjà créés dans `~/config-repo/`.
+
+### 3. Démarrer l'Infrastructure (Docker)
 
 ```bash
 docker-compose up -d
 ```
 
-Cela démarre:
-- PostgreSQL (meteo-db sur port 5432, arrosage-db sur port 5433)
-- Kafka + Zookeeper (Kafka sur port 9092)
-- Redis (port 6379)
+Cela démarre dans l'ordre:
+1. **Eureka Server** (port 8761) - Service Discovery
+2. **Config Server** (port 8888) - Configuration centralisée
+3. **PostgreSQL** (meteo-db sur port 5432, arrosage-db sur port 5433)
+4. **Kafka + Zookeeper** (Kafka sur port 9092)
+5. **Redis** (port 6379)
+6. **pgAdmin** (port 5050) - Interface de gestion PostgreSQL
+7. **Kafka UI** (port 8090) - Interface de gestion Kafka
 
-### 3. Lancer les Microservices Backend
+**Important**: Les services démarrent avec des health checks. Eureka Server démarre en premier, suivi par Config Server.
+
+### 4. Lancer les Microservices Backend
+
+**Ordre de démarrage recommandé**:
+1. Eureka Server (déjà dans Docker)
+2. Config Server (déjà dans Docker)
+3. API Gateway
+4. Meteo Service
+5. Arrosage Service
+6. Auth Service
 
 #### Option A: Avec Maven
 
 ```bash
-# Eureka Server
-cd backend/eureka-server
-./mvnw spring-boot:run
-
-# Config Server
-cd backend/config-server
-./mvnw spring-boot:run
+# Les services Eureka et Config sont déjà dans Docker
+# Démarrez les autres services:
 
 # API Gateway
 cd backend/api-gateway
@@ -93,6 +126,53 @@ cd backend/auth-service
 1. Ouvrir le projet dans IntelliJ
 2. Attendre l'indexation et le téléchargement des dépendances
 3. Exécuter chaque application Spring Boot via la classe principale
+
+**Vérification**: Accédez à http://localhost:8761 pour voir tous les services enregistrés dans Eureka.
+
+### 5. Lancer le Frontend Angular
+
+```bash
+cd frontend/irrigation-app
+npm install
+npm start
+```
+
+L'application sera accessible sur http://localhost:4200
+
+## 🏗️ Service Discovery & Configuration
+
+### Eureka Server (Service Discovery)
+
+Le serveur Eureka permet aux microservices de s'enregistrer et de se découvrir dynamiquement.
+
+- **Console**: http://localhost:8761
+- **Fonction**: Registre de services, load balancing côté client
+- **Auto-registration**: Tous les services s'enregistrent automatiquement au démarrage
+
+### Config Server (Configuration Centralisée)
+
+Le Config Server fournit une configuration centralisée pour tous les microservices.
+
+- **API**: http://localhost:8888
+- **Source**: Repository Git local (`~/config-repo`)
+- **Endpoints**:
+  - http://localhost:8888/meteo-service/default
+  - http://localhost:8888/arrosage-service/default
+  - http://localhost:8888/application/default
+
+**Structure du config-repo**:
+```
+~/config-repo/
+├── application.properties        # Configuration commune
+├── meteo-service.properties      # Configuration meteo-service
+└── arrosage-service.properties   # Configuration arrosage-service
+```
+
+### Ordre de Démarrage
+
+1. **Eureka Server** → Service Discovery (premier à démarrer)
+2. **Config Server** → Se connecte à Eureka, fournit les configurations
+3. **Autres Services** → Se connectent à Eureka et récupèrent leur config depuis Config Server
 
 ### 4. Lancer le Frontend Angular
 

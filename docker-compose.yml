@@ -1,6 +1,47 @@
 version: '3.8'
 
 services:
+  # Eureka Server - Service Discovery
+  eureka-server:
+    build:
+      context: ./backend/eureka-server
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - irrigation-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8761/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  # Config Server - Centralized Configuration
+  config-server:
+    build:
+      context: ./backend/config-server
+      dockerfile: Dockerfile
+    container_name: config-server
+    ports:
+      - "8888:8888"
+    volumes:
+      - ${USERPROFILE}/config-repo:/config-repo
+    environment:
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=file:///config-repo
+    networks:
+      - irrigation-network
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8888/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
   # PostgreSQL for Meteo Service
   postgres-meteo:
     image: postgres:15-alpine
