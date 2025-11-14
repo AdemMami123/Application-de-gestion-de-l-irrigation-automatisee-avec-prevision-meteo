@@ -244,7 +244,7 @@ Ce projet est sous licence MIT - voir le fichier [LICENSE](LICENSE) pour plus de
 
 ## 👥 Auteurs
 
-- Votre Nom - *Travail initial*
+- Adem Mami -
 
 ## 🙏 Remerciements
 
