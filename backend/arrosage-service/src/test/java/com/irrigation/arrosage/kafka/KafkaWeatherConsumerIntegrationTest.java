@@ -2,7 +2,7 @@ package com.irrigation.arrosage.kafka;
 
 import com.irrigation.arrosage.entity.Parcelle;
 import com.irrigation.arrosage.entity.ProgrammeArrosage;
-import com.irrigation.arrosage.entity.StatutProgramme;
+import com.irrigation.arrosage.entity.ProgrammeArrosage.StatutProgramme;
 import com.irrigation.arrosage.event.WeatherChangeEvent;
 import com.irrigation.arrosage.event.WeatherChangeEvent.WeatherConditions;
 import com.irrigation.arrosage.repository.ParcelleRepository;

@@ -1,7 +1,7 @@
 package com.irrigation.arrosage.service;
 
 import com.irrigation.arrosage.entity.ProgrammeArrosage;
-import com.irrigation.arrosage.entity.StatutProgramme;
+import com.irrigation.arrosage.entity.ProgrammeArrosage.StatutProgramme;
 import com.irrigation.arrosage.event.WeatherChangeEvent;
 import com.irrigation.arrosage.event.WeatherChangeEvent.WeatherConditions;
 import com.irrigation.arrosage.repository.ProgrammeArrosageRepository;
@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -76,7 +77,8 @@ public class WeatherBasedSchedulingService {
             if (hasSignificantRainIncrease(oldConditions, newConditions)) {
                 double rainDiff = newConditions.getPluiePrevue() - oldConditions.getPluiePrevue();
                 double reductionFactor = Math.min(0.5, rainDiff / 20.0); // Max 50% reduction
-                programme.setVolumePrevu(programme.getVolumePrevu() * (1 - reductionFactor));
+                programme.setVolumePrevu(programme.getVolumePrevu().multiply(
+                        BigDecimal.valueOf(1 - reductionFactor)).setScale(2, java.math.RoundingMode.HALF_UP));
                 log.info("Programme {} volume reduced by {}% due to rain forecast", 
                         programme.getId(), (int)(reductionFactor * 100));
             }
@@ -115,7 +117,8 @@ public class WeatherBasedSchedulingService {
                 oldConditions.getPluiePrevue() != null &&
                 newConditions.getPluiePrevue() > oldConditions.getPluiePrevue() + 5) {
                 
-                programme.setVolumePrevu(programme.getVolumePrevu() * 0.9); // Reduce by 10%
+                programme.setVolumePrevu(programme.getVolumePrevu().multiply(
+                        BigDecimal.valueOf(0.9)).setScale(2, java.math.RoundingMode.HALF_UP)); // Reduce by 10%
                 log.info("Programme {} volume reduced by 10% due to moderate rain increase", 
                         programme.getId());
             }
@@ -194,12 +197,15 @@ public class WeatherBasedSchedulingService {
         
         // Increase water volume for higher temperatures
         if (conditions.getTemperatureMax() > 30) {
-            programme.setVolumePrevu(programme.getVolumePrevu() * 1.3); // +30%
+            programme.setVolumePrevu(programme.getVolumePrevu().multiply(
+                    BigDecimal.valueOf(1.3)).setScale(2, java.math.RoundingMode.HALF_UP)); // +30%
             programme.setDuree((int) (programme.getDuree() * 1.2)); // +20%
         } else if (conditions.getTemperatureMax() > 25) {
-            programme.setVolumePrevu(programme.getVolumePrevu() * 1.15); // +15%
+            programme.setVolumePrevu(programme.getVolumePrevu().multiply(
+                    BigDecimal.valueOf(1.15)).setScale(2, java.math.RoundingMode.HALF_UP)); // +15%
         } else if (conditions.getTemperatureMax() < 15) {
-            programme.setVolumePrevu(programme.getVolumePrevu() * 0.85); // -15%
+            programme.setVolumePrevu(programme.getVolumePrevu().multiply(
+                    BigDecimal.valueOf(0.85)).setScale(2, java.math.RoundingMode.HALF_UP)); // -15%
         }
     }
 }

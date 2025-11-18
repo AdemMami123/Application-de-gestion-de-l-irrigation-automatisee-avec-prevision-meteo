@@ -3,7 +3,7 @@ package com.irrigation.arrosage.service;
 import com.irrigation.arrosage.dto.JournalArrosageDTO;
 import com.irrigation.arrosage.entity.JournalArrosage;
 import com.irrigation.arrosage.entity.ProgrammeArrosage;
-import com.irrigation.arrosage.entity.StatutProgramme;
+import com.irrigation.arrosage.entity.ProgrammeArrosage.StatutProgramme;
 import com.irrigation.arrosage.repository.ProgrammeArrosageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
@@ -116,13 +117,11 @@ public class IrrigationExecutionService {
     private ExecutionResult simulateIrrigationExecution(ProgrammeArrosage programme) {
         // Simuler une variance de ±10% sur le volume réel
         double variance = 0.9 + (random.nextDouble() * 0.2); // 0.9 to 1.1
-        double actualVolume = programme.getVolumePrevu() * variance;
-        
-        // Arrondir à 2 décimales
-        actualVolume = Math.round(actualVolume * 100.0) / 100.0;
+        BigDecimal actualVolume = programme.getVolumePrevu().multiply(BigDecimal.valueOf(variance))
+                .setScale(2, java.math.RoundingMode.HALF_UP);
         
         // Générer une remarque basée sur la variance
-        String remarque = generateExecutionRemark(programme.getVolumePrevu(), actualVolume);
+        String remarque = generateExecutionRemark(programme.getVolumePrevu().doubleValue(), actualVolume.doubleValue());
         
         log.debug("Simulated irrigation execution - Planned: {} m³, Actual: {} m³ ({}% variance)", 
                 programme.getVolumePrevu(), actualVolume, Math.round((variance - 1.0) * 100));
@@ -158,7 +157,7 @@ public class IrrigationExecutionService {
         journalDTO.setVolumeReel(result.getActualVolume());
         journalDTO.setRemarque(result.getRemarque());
         
-        journalService.createJournal(journalDTO);
+        journalService.create(journalDTO);
         
         log.debug("Created journal entry for program {}", programme.getId());
     }
@@ -175,10 +174,10 @@ public class IrrigationExecutionService {
             JournalArrosageDTO journalDTO = new JournalArrosageDTO();
             journalDTO.setProgrammeId(programme.getId());
             journalDTO.setDateExecution(LocalDateTime.now());
-            journalDTO.setVolumeReel(0.0);
+            journalDTO.setVolumeReel(BigDecimal.ZERO);
             journalDTO.setRemarque("ÉCHEC D'EXÉCUTION: " + errorMessage);
             
-            journalService.createJournal(journalDTO);
+            journalService.create(journalDTO);
             
             log.warn("Marked program {} as ANNULE due to execution failure", programme.getId());
             
@@ -216,15 +215,15 @@ public class IrrigationExecutionService {
      * Classe interne pour encapsuler les résultats d'exécution
      */
     private static class ExecutionResult {
-        private final double actualVolume;
+        private final BigDecimal actualVolume;
         private final String remarque;
 
-        public ExecutionResult(double actualVolume, String remarque) {
+        public ExecutionResult(BigDecimal actualVolume, String remarque) {
             this.actualVolume = actualVolume;
             this.remarque = remarque;
         }
 
-        public double getActualVolume() {
+        public BigDecimal getActualVolume() {
             return actualVolume;
         }
 

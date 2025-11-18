@@ -5,7 +5,7 @@ import com.irrigation.arrosage.dto.PrevisionMeteoDTO;
 import com.irrigation.arrosage.dto.ProgrammeArrosageDTO;
 import com.irrigation.arrosage.entity.Parcelle;
 import com.irrigation.arrosage.entity.ProgrammeArrosage;
-import com.irrigation.arrosage.entity.StatutProgramme;
+import com.irrigation.arrosage.entity.ProgrammeArrosage.StatutProgramme;
 import com.irrigation.arrosage.exception.ResourceNotFoundException;
 import com.irrigation.arrosage.repository.ParcelleRepository;
 import com.irrigation.arrosage.repository.ProgrammeArrosageRepository;
