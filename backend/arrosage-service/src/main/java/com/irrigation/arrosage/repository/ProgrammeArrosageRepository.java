@@ -38,4 +38,23 @@ public interface ProgrammeArrosageRepository extends JpaRepository<ProgrammeArro
      * Rechercher les programmes planifiés d'une parcelle
      */
     List<ProgrammeArrosage> findByParcelleIdAndStatut(Long parcelleId, ProgrammeArrosage.StatutProgramme statut);
+    
+    /**
+     * Rechercher les programmes entre deux dates avec un statut spécifique
+     */
+    @Query("SELECT p FROM ProgrammeArrosage p WHERE p.datePlanifiee BETWEEN :startDate AND :endDate AND p.statut = :statut ORDER BY p.datePlanifiee")
+    List<ProgrammeArrosage> findByDatePlanifieeBetweenAndStatut(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate,
+            @Param("statut") ProgrammeArrosage.StatutProgramme statut
+    );
+    
+    /**
+     * Rechercher les programmes avant une date avec un statut spécifique
+     */
+    @Query("SELECT p FROM ProgrammeArrosage p WHERE p.datePlanifiee <= :date AND p.statut = :statut ORDER BY p.datePlanifiee")
+    List<ProgrammeArrosage> findByDatePlanifieeBeforeAndStatut(
+            @Param("date") LocalDateTime date,
+            @Param("statut") ProgrammeArrosage.StatutProgramme statut
+    );
 }
