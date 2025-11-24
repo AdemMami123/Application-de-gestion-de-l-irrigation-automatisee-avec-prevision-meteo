@@ -1,28 +1,11 @@
-FROM eclipse-temurin:17-jdk-alpine AS build
-WORKDIR /app
-
-# Copy Maven wrapper and pom.xml
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-
-# Download dependencies
-RUN ./mvnw dependency:go-offline
-
-# Copy source code
-COPY src ./src
-
-# Build the application
-RUN ./mvnw clean package -DskipTests
-
-# Runtime stage
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Install git (required for Git backend)
 RUN apk add --no-cache git
 
-# Copy the built artifact from build stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy the pre-built JAR file
+COPY target/*.jar app.jar
 
 # Expose Config Server port
 EXPOSE 8888

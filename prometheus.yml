@@ -1,0 +1,86 @@
+# Prometheus Configuration for Irrigation Monitoring System
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'irrigation-monitoring'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+  
+  # API Gateway Service
+  - job_name: 'gateway-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['gateway-service:8080']
+        labels:
+          service: 'gateway'
+          component: 'api-gateway'
+    scrape_interval: 10s
+    scrape_timeout: 5s
+  
+  # Meteo Service (Weather Microservice)
+  - job_name: 'meteo-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['meteo-service:8081']
+        labels:
+          service: 'meteo'
+          component: 'weather'
+    scrape_interval: 15s
+    scrape_timeout: 5s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__scheme__]
+        target_label: scheme
+  
+  # Arrosage Service (Irrigation Management Microservice)
+  - job_name: 'arrosage-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['arrosage-service:8082']
+        labels:
+          service: 'arrosage'
+          component: 'irrigation'
+    scrape_interval: 15s
+    scrape_timeout: 5s
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__scheme__]
+        target_label: scheme
+  
+  # Eureka Service Registry
+  - job_name: 'eureka-server'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['eureka-server:8761']
+        labels:
+          service: 'eureka'
+          component: 'service-registry'
+    scrape_interval: 30s
+    scrape_timeout: 5s
+  
+  # Redis Cache
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+        labels:
+          service: 'redis'
+          component: 'cache'
+    scrape_interval: 15s
+    scrape_timeout: 5s

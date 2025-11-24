@@ -2,14 +2,14 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 
 # Copy the pre-built JAR file
-COPY target/*.jar app.jar
+COPY target/gateway-service-1.0.0.jar app.jar
 
-# Expose Eureka Server port
-EXPOSE 8761
+# Expose gateway port
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-  CMD wget --quiet --tries=1 --spider http://localhost:8761/actuator/health || exit 1
+  CMD wget --quiet --tries=1 --spider http://localhost:8080/actuator/health || exit 1
 
-# Run the application
+# Run application
 ENTRYPOINT ["java", "-jar", "app.jar"]
