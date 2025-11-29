@@ -1,0 +1,129 @@
+<div class="journal-details-container">
+  @if (isLoading()) {
+    <div class="loading-spinner">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Chargement...</p>
+    </div>
+  }
+
+  @if (!isLoading() && journal()) {
+    <!-- Header Card -->
+    <mat-card class="header-card">
+      <div class="header-content">
+        <div class="title-section">
+          <mat-icon class="header-icon">history</mat-icon>
+          <div>
+            <h1>Journal d'Arrosage #{{ journal()!.id }}</h1>
+            <p class="subtitle">{{ journal()!.parcelleNom }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-buttons">
+        <button mat-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+        <button mat-raised-button color="primary" (click)="editJournal()">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        <button mat-raised-button color="warn" (click)="deleteJournal()">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </div>
+    </mat-card>
+
+    <div class="details-grid">
+      
+      <!-- Execution Information -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>event</mat-icon>
+            Exécution
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <div class="info-label">
+              <mat-icon>calendar_today</mat-icon>
+              Date d'exécution
+            </div>
+            <div class="info-value">{{ formatDate(journal()!.dateExecution) }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">
+              <mat-icon>tag</mat-icon>
+              Programme ID
+            </div>
+            <div class="info-value">#{{ journal()!.programmeId }}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Water Consumption -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>water_drop</mat-icon>
+            Consommation d'eau
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <div class="info-label">
+              <mat-icon>opacity</mat-icon>
+              Volume réel
+            </div>
+            <div class="info-value">{{ formatVolume(journal()!.volumeReel) }}</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Remarks -->
+      @if (journal()!.remarque) {
+        <mat-card class="info-card remarque-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>note</mat-icon>
+              Remarques
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="remarque-content">
+              {{ journal()!.remarque }}
+            </div>
+          </mat-card-content>
+        </mat-card>
+      }
+
+      <!-- Statistics Card -->
+      <mat-card class="stats-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>analytics</mat-icon>
+            Statistiques
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <mat-icon>water</mat-icon>
+              <div class="stat-value">{{ journal()!.volumeReel.toFixed(2) }}</div>
+              <div class="stat-label">m³ consommés</div>
+            </div>
+            <div class="stat-item">
+              <mat-icon>local_drink</mat-icon>
+              <div class="stat-value">{{ (journal()!.volumeReel * 1000).toFixed(0) }}</div>
+              <div class="stat-label">litres</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  }
+</div>

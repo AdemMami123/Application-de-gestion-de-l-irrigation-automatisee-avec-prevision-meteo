@@ -1,0 +1,123 @@
+<div class="journal-form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>{{ isEditMode() ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditMode() ? 'Modifier le Journal' : 'Nouveau Journal d\'Arrosage' }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="journalForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          
+          <!-- Programme Selection -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Programme d'arrosage</mat-label>
+            <mat-select formControlName="programmeId" (selectionChange)="onProgrammeChange()">
+              @for (programme of programmes(); track programme.id) {
+                <mat-option [value]="programme.id">
+                  #{{ programme.id }} - {{ programme.parcelleNom }} - {{ programme.volumePrevu }} m³
+                </mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>calendar_today</mat-icon>
+            @if (journalForm.get('programmeId')?.hasError('required') && journalForm.get('programmeId')?.touched) {
+              <mat-error>Le programme est obligatoire</mat-error>
+            }
+            <mat-hint>Sélectionner le programme d'arrosage exécuté</mat-hint>
+          </mat-form-field>
+
+          <!-- Date Exécution -->
+          <mat-form-field appearance="outline">
+            <mat-label>Date d'exécution</mat-label>
+            <input matInput 
+                   [matDatepicker]="picker" 
+                   formControlName="dateExecution"
+                   placeholder="Sélectionner une date">
+            <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            @if (journalForm.get('dateExecution')?.hasError('required') && journalForm.get('dateExecution')?.touched) {
+              <mat-error>La date est obligatoire</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Time Exécution -->
+          <mat-form-field appearance="outline">
+            <mat-label>Heure d'exécution</mat-label>
+            <input matInput 
+                   type="time" 
+                   formControlName="timeExecution"
+                   placeholder="HH:MM">
+            <mat-icon matPrefix>schedule</mat-icon>
+            @if (journalForm.get('timeExecution')?.hasError('required') && journalForm.get('timeExecution')?.touched) {
+              <mat-error>L'heure est obligatoire</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Volume Réel -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Volume réel consommé (m³)</mat-label>
+            <input matInput 
+                   type="number" 
+                   step="0.01"
+                   formControlName="volumeReel"
+                   placeholder="0.00">
+            <mat-icon matPrefix>water_drop</mat-icon>
+            <span matSuffix>m³</span>
+            @if (journalForm.get('volumeReel')?.hasError('required') && journalForm.get('volumeReel')?.touched) {
+              <mat-error>Le volume est obligatoire</mat-error>
+            }
+            @if (journalForm.get('volumeReel')?.hasError('min')) {
+              <mat-error>Le volume doit être supérieur à 0</mat-error>
+            }
+            <mat-hint>Volume d'eau réellement utilisé pendant l'arrosage</mat-hint>
+          </mat-form-field>
+
+          <!-- Remarque -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Remarque</mat-label>
+            <textarea matInput 
+                      formControlName="remarque"
+                      rows="4"
+                      placeholder="Notes, observations, problèmes rencontrés..."></textarea>
+            <mat-icon matPrefix>note</mat-icon>
+            <mat-hint>Optionnel - Ajouter des notes ou observations</mat-hint>
+          </mat-form-field>
+
+        </div>
+
+        <!-- Info Card -->
+        <div class="info-card">
+          <mat-icon>info</mat-icon>
+          <div class="info-content">
+            <h4>Information</h4>
+            <p>
+              Le journal d'arrosage enregistre les exécutions réelles des programmes planifiés.
+              Le volume réel peut différer du volume prévu en fonction des conditions d'exécution.
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button mat-raised-button 
+                  type="button" 
+                  (click)="cancel()"
+                  [disabled]="isSubmitting()">
+            <mat-icon>cancel</mat-icon>
+            Annuler
+          </button>
+          
+          <button mat-raised-button 
+                  color="primary" 
+                  type="submit"
+                  [disabled]="journalForm.invalid || isSubmitting()">
+            <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+            {{ isEditMode() ? 'Enregistrer' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

@@ -33,6 +33,14 @@ export const routes: Routes = [
     canActivate: [authGuard]
   },
 
+  // Journal (lazy loaded)
+  {
+    path: 'journal',
+    loadChildren: () => import('./features/journal/journal.routes')
+      .then(m => m.JOURNAL_ROUTES),
+    canActivate: [authGuard]
+  },
+
   // Authentication routes (no guard)
   {
     path: 'login',
