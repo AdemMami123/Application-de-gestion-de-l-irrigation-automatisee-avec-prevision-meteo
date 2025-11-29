@@ -142,6 +142,192 @@ mat-form-field {
   }
 }
 
+/* CDK Overlay - Ensure all overlays are visible */
+.cdk-overlay-container {
+  z-index: 1000;
+  
+  .cdk-overlay-pane {
+    max-width: 100vw !important;
+  }
+  
+  .cdk-overlay-backdrop {
+    background: rgba(0, 0, 0, 0.32);
+  }
+}
+
+/* Material Select Panel Overrides - Fix for transparent dropdown options */
+.mat-mdc-select-panel {
+  background: white !important;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+  
+  .mat-mdc-option {
+    background: white !important;
+    color: #333 !important;
+    min-height: 48px !important;
+    padding: 0 16px !important;
+    
+    .mdc-list-item__primary-text {
+      color: #333 !important;
+      font-size: 14px !important;
+    }
+    
+    &:hover {
+      background: #f0f2f9 !important;
+      
+      .mdc-list-item__primary-text {
+        color: #333 !important;
+      }
+    }
+    
+    &.mat-mdc-option-active {
+      background: #e8ebf7 !important;
+      
+      .mdc-list-item__primary-text {
+        color: #333 !important;
+      }
+    }
+    
+    &.mdc-list-item--selected {
+      background: #667eea !important;
+      color: white !important;
+      
+      .mdc-list-item__primary-text {
+        color: white !important;
+      }
+      
+      &:hover {
+        background: #5568d3 !important;
+        
+        .mdc-list-item__primary-text {
+          color: white !important;
+        }
+      }
+    }
+  }
+}
+
+/* Material Autocomplete Panel */
+.mat-mdc-autocomplete-panel {
+  background: white !important;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2) !important;
+  
+  .mat-mdc-option {
+    background: white !important;
+    color: #333 !important;
+    
+    .mdc-list-item__primary-text {
+      color: #333 !important;
+    }
+    
+    &:hover {
+      background: #f0f2f9 !important;
+    }
+    
+    &.mat-mdc-option-active {
+      background: #e8ebf7 !important;
+    }
+  }
+}
+
+/* Date Picker Panel */
+.mat-datepicker-content {
+  background: white !important;
+  
+  .mat-calendar {
+    background: white !important;
+  }
+  
+  .mat-calendar-body-cell:not(.mat-calendar-body-disabled):hover {
+    background: #f0f2f9 !important;
+  }
+  
+  .mat-calendar-body-selected {
+    background: #667eea !important;
+    color: white !important;
+  }
+}
+
+/* Menu Panel */
+.mat-mdc-menu-panel {
+  background: white !important;
+  
+  .mat-mdc-menu-item {
+    background: white !important;
+    color: #333 !important;
+    
+    &:hover {
+      background: #f0f2f9 !important;
+    }
+  }
+}
+
+/* Dialog */
+.mat-mdc-dialog-container {
+  background: white !important;
+  
+  .mat-mdc-dialog-surface {
+    background: white !important;
+  }
+}
+
+/* Tooltip */
+.mat-mdc-tooltip {
+  background: #333 !important;
+  color: white !important;
+  font-size: 12px !important;
+}
+
+/* Snackbar */
+.mat-mdc-snack-bar-container {
+  background: white !important;
+  color: #333 !important;
+  
+  .mdc-snackbar__surface {
+    background: white !important;
+  }
+}
+
+/* Bottom Sheet */
+.mat-bottom-sheet-container {
+  background: white !important;
+}
+
+/* Sidenav */
+.mat-drawer-container {
+  background: #f5f7fa !important;
+}
+
+.mat-drawer {
+  background: white !important;
+}
+
+/* Expansion Panel */
+.mat-expansion-panel {
+  background: white !important;
+}
+
+/* Stepper */
+.mat-stepper-horizontal, .mat-stepper-vertical {
+  background: white !important;
+}
+
+/* Tabs */
+.mat-mdc-tab-group {
+  background: white !important;
+}
+
+/* Chip List */
+.mat-mdc-chip-listbox {
+  background: transparent !important;
+}
+
+/* Form Field Backgrounds */
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background: white !important;
+  }
+}
+
 /* Utility Classes */
 .text-gradient {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
