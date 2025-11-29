@@ -1,0 +1,144 @@
+<div class="programme-list-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>calendar_today</mat-icon>
+        Gestion des Programmes d'Arrosage
+      </mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filters-row">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-label>Rechercher</mat-label>
+          <input matInput 
+                 [(ngModel)]="searchTerm" 
+                 (ngModelChange)="onSearchChange()"
+                 placeholder="Rechercher par parcelle ou ID...">
+          <mat-icon matPrefix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="statut-field">
+          <mat-label>Statut</mat-label>
+          <mat-select [(ngModel)]="selectedStatut" (ngModelChange)="onStatutChange()">
+            <mat-option value="ALL">Tous</mat-option>
+            @for (statut of statutOptions; track statut) {
+              <mat-option [value]="statut">{{ statutLabels[statut] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" (click)="createProgramme()" class="create-button">
+          <mat-icon>add</mat-icon>
+          Nouveau Programme
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="table-card">
+    <div class="table-container">
+      <table mat-table [dataSource]="filteredProgrammes()" class="programmes-table">
+        
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let programme">#{{ programme.id }}</td>
+        </ng-container>
+
+        <!-- Parcelle Column -->
+        <ng-container matColumnDef="parcelleNom">
+          <th mat-header-cell *matHeaderCellDef>Parcelle</th>
+          <td mat-cell *matCellDef="let programme">
+            <div class="parcelle-cell">
+              <mat-icon class="parcelle-icon">grass</mat-icon>
+              {{ programme.parcelleNom }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Date Planifiée Column -->
+        <ng-container matColumnDef="datePlanifiee">
+          <th mat-header-cell *matHeaderCellDef>Date Planifiée</th>
+          <td mat-cell *matCellDef="let programme">
+            <div class="date-cell">
+              <mat-icon class="date-icon">event</mat-icon>
+              {{ formatDate(programme.datePlanifiee) }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Durée Column -->
+        <ng-container matColumnDef="duree">
+          <th mat-header-cell *matHeaderCellDef>Durée</th>
+          <td mat-cell *matCellDef="let programme">
+            <div class="duration-cell">
+              <mat-icon class="duration-icon">schedule</mat-icon>
+              {{ programme.duree }} min
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Volume Column -->
+        <ng-container matColumnDef="volumePrevu">
+          <th mat-header-cell *matHeaderCellDef>Volume</th>
+          <td mat-cell *matCellDef="let programme">
+            <div class="volume-cell">
+              <mat-icon class="volume-icon">water_drop</mat-icon>
+              {{ programme.volumePrevu }} m³
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Statut Column -->
+        <ng-container matColumnDef="statut">
+          <th mat-header-cell *matHeaderCellDef>Statut</th>
+          <td mat-cell *matCellDef="let programme">
+            <mat-chip [class]="'statut-chip statut-' + programme.statut.toLowerCase()">
+              {{ getStatutLabel(programme.statut) }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let programme">
+            <div class="actions-cell">
+              <button mat-icon-button 
+                      color="primary" 
+                      (click)="viewDetails(programme.id!)"
+                      matTooltip="Voir détails">
+                <mat-icon>visibility</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      color="accent" 
+                      (click)="editProgramme(programme.id!)"
+                      matTooltip="Modifier">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button 
+                      color="warn" 
+                      (click)="deleteProgramme(programme.id!)"
+                      matTooltip="Supprimer">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="programme-row"></tr>
+      </table>
+
+      @if (filteredProgrammes().length === 0) {
+        <div class="no-data">
+          <mat-icon>inbox</mat-icon>
+          <p>Aucun programme trouvé</p>
+          <button mat-raised-button color="primary" (click)="createProgramme()">
+            Créer le premier programme
+          </button>
+        </div>
+      }
+    </div>
+  </mat-card>
+</div>

@@ -1,0 +1,202 @@
+<div class="dashboard-container">
+  <div class="dashboard-content">
+    <!-- Header -->
+    <div class="dashboard-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1>Tableau de Bord</h1>
+          <p class="subtitle">Vue d'ensemble de votre système d'irrigation</p>
+        </div>
+        <button mat-raised-button color="primary" (click)="refresh()" class="refresh-btn">
+          <mat-icon>refresh</mat-icon>
+          Actualiser
+        </button>
+      </div>
+    </div>
+
+    @if (loading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="60"></mat-spinner>
+        <p class="loading-text">Chargement des données...</p>
+      </div>
+    } @else {
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <!-- Parcelles Card -->
+        <div class="stat-card parcelles-card" (click)="navigateTo('/parcelles')">
+          <div class="card-icon-section">
+            <div class="icon-wrapper parcelles-icon">
+              <mat-icon>agriculture</mat-icon>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="stat-header">
+              <h3>Parcelles</h3>
+              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+            </div>
+            <div class="stat-value">{{ stats().totalParcelles }}</div>
+            <div class="stat-details">
+              <div class="detail-item">
+                <mat-icon class="status-icon active">check_circle</mat-icon>
+                <span>{{ stats().parcellesActives }} actives</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon class="status-icon inactive">cancel</mat-icon>
+                <span>{{ parcellesInactives() }} inactives</span>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="tauxActivationParcelles()"></div>
+            </div>
+            <span class="progress-text">{{ tauxActivationParcelles() }}% d'activation</span>
+          </div>
+        </div>
+
+        <!-- Programmes Card -->
+        <div class="stat-card programmes-card" (click)="navigateTo('/programmes')">
+          <div class="card-icon-section">
+            <div class="icon-wrapper programmes-icon">
+              <mat-icon>water_drop</mat-icon>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="stat-header">
+              <h3>Programmes</h3>
+              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+            </div>
+            <div class="stat-value">{{ stats().totalProgrammes }}</div>
+            <div class="stat-details">
+              <div class="detail-item">
+                <mat-icon class="status-icon running">play_circle</mat-icon>
+                <span>{{ stats().programmesEnCours }} en cours</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon class="status-icon planned">schedule</mat-icon>
+                <span>{{ stats().programmesPlanifies }} planifiés</span>
+              </div>
+              <div class="detail-item">
+                <mat-icon class="status-icon completed">check_circle</mat-icon>
+                <span>{{ stats().programmesTermines }} terminés</span>
+              </div>
+            </div>
+            <div class="volume-info">
+              <mat-icon>opacity</mat-icon>
+              <span>{{ stats().volumeEauTotal }} L d'eau total</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Journal Card -->
+        <div class="stat-card journal-card" (click)="navigateTo('/journal')">
+          <div class="card-icon-section">
+            <div class="icon-wrapper journal-icon">
+              <mat-icon>history</mat-icon>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="stat-header">
+              <h3>Journal d'Arrosage</h3>
+              <mat-icon class="arrow-icon">arrow_forward</mat-icon>
+            </div>
+            <div class="stat-value">{{ stats().totalJournaux }}</div>
+            <div class="stat-details">
+              <div class="detail-item">
+                <mat-icon class="status-icon">event_note</mat-icon>
+                <span>Événements enregistrés</span>
+              </div>
+            </div>
+            @if (stats().dernierArrosage) {
+              <div class="last-irrigation">
+                <mat-icon>access_time</mat-icon>
+                <div class="time-info">
+                  <span class="label">Dernier arrosage</span>
+                  <span class="value">{{ formatDate(stats().dernierArrosage) }}</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions & Recent Activity -->
+      <div class="content-grid">
+        <!-- Quick Actions -->
+        <div class="quick-actions-section">
+          <mat-card class="actions-card">
+            <mat-card-header>
+              <div class="section-title">
+                <mat-icon>flash_on</mat-icon>
+                <h2>Actions Rapides</h2>
+              </div>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+              <div class="actions-grid">
+                <button mat-raised-button class="action-button" (click)="navigateTo('/parcelles/new')">
+                  <mat-icon>add_circle</mat-icon>
+                  <span>Nouvelle Parcelle</span>
+                </button>
+                <button mat-raised-button class="action-button" (click)="navigateTo('/programmes/new')">
+                  <mat-icon>add_circle</mat-icon>
+                  <span>Nouveau Programme</span>
+                </button>
+                <button mat-raised-button class="action-button" (click)="navigateTo('/parcelles')">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Voir Parcelles</span>
+                </button>
+                <button mat-raised-button class="action-button" (click)="navigateTo('/programmes')">
+                  <mat-icon>visibility</mat-icon>
+                  <span>Voir Programmes</span>
+                </button>
+                <button mat-raised-button class="action-button" (click)="navigateTo('/journal')">
+                  <mat-icon>history</mat-icon>
+                  <span>Historique</span>
+                </button>
+                <button mat-raised-button class="action-button" (click)="navigateTo('/meteo')">
+                  <mat-icon>wb_sunny</mat-icon>
+                  <span>Météo</span>
+                </button>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <!-- Recent Activity -->
+        <div class="activity-section">
+          <mat-card class="activity-card">
+            <mat-card-header>
+              <div class="section-title">
+                <mat-icon>notifications_active</mat-icon>
+                <h2>Activité Récente</h2>
+              </div>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+              @if (recentActivities().length > 0) {
+                <div class="activity-list">
+                  @for (activity of recentActivities(); track activity.id) {
+                    <div class="activity-item">
+                      <div class="activity-icon" [style.background-color]="activity.color">
+                        <mat-icon>{{ activity.icon }}</mat-icon>
+                      </div>
+                      <div class="activity-content">
+                        <h4>{{ activity.title }}</h4>
+                        <p>{{ activity.description }}</p>
+                        <span class="activity-time">{{ getRelativeTime(activity.date) }}</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="empty-activity">
+                  <mat-icon>inbox</mat-icon>
+                  <p>Aucune activité récente</p>
+                </div>
+              }
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+    }
+  </div>
+</div>

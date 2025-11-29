@@ -1,0 +1,229 @@
+﻿.app-container {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-sidenav {
+  width: 280px;
+  background: white;
+  border-right: 2px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.05);
+
+  .sidenav-header {
+    padding: 28px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+    .app-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+      animation: pulse 3s ease-in-out infinite;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  mat-nav-list {
+    padding: 16px 12px;
+    
+    a {
+      margin: 8px 0;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 4px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transform: scaleY(0);
+        transition: transform 0.3s ease;
+      }
+      
+      &:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.08) 100%);
+        transform: translateX(8px);
+        
+        &::before {
+          transform: scaleY(1);
+        }
+        
+        mat-icon {
+          transform: scale(1.1) rotate(5deg);
+        }
+      }
+    }
+  }
+
+  .active-link {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.15) 0%, rgba(118, 75, 162, 0.15) 100%) !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    font-weight: 600;
+    
+    &::before {
+      transform: scaleY(1) !important;
+    }
+    
+    span {
+      color: #667eea;
+      font-weight: 600;
+    }
+    
+    mat-icon {
+      color: #667eea;
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+  
+  button {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.15);
+      transform: rotate(90deg);
+    }
+  }
+
+  .toolbar-title {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+      transform: scale(1.05);
+    }
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+  
+  .user-menu-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    backdrop-filter: blur(10px);
+    border-radius: 24px !important;
+    transition: all 0.3s ease !important;
+    color: white !important;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.25) !important;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    mat-icon {
+      color: white !important;
+      margin: 0 !important;
+    }
+    
+    .username-text {
+      font-weight: 500;
+      font-size: 15px;
+      color: white;
+      white-space: nowrap;
+    }
+  }
+}
+
+.content-wrapper {
+  padding: 0;
+  min-height: calc(100vh - 64px);
+  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+  flex: 1;
+  overflow: auto;
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .app-sidenav {
+    width: 260px;
+    
+    .sidenav-header {
+      padding: 24px 16px;
+      
+      .app-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+      
+      h3 {
+        font-size: 18px;
+      }
+    }
+  }
+
+  .content-wrapper {
+    padding: 0;
+  }
+  
+  .app-toolbar {
+    .toolbar-title {
+      font-size: 18px;
+    }
+    
+    .user-menu {
+      padding: 6px 12px;
+      
+      .user-name {
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .app-sidenav {
+    width: 100%;
+    max-width: 280px;
+  }
+  
+  .app-toolbar {
+    .toolbar-title {
+      font-size: 16px;
+    }
+  }
+}

@@ -1,0 +1,183 @@
+<div class="parcelle-details-container">
+  @if (loading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="60"></mat-spinner>
+      <p>Chargement des détails...</p>
+    </div>
+  } @else if (parcelle()) {
+    <div class="content-wrapper">
+      <!-- Page Header -->
+      <div class="page-header">
+        <div class="header-content">
+          <button mat-icon-button (click)="onBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+          <div class="header-text">
+            <h1>{{ parcelle()!.nom }}</h1>
+            <p>Détails de la parcelle</p>
+          </div>
+          <div class="header-actions">
+            <button mat-icon-button (click)="refresh()" matTooltip="Actualiser">
+              <mat-icon>refresh</mat-icon>
+            </button>
+            <button mat-raised-button color="primary" (click)="onEdit()" class="edit-button">
+              <mat-icon>edit</mat-icon>
+              Modifier
+            </button>
+            <button mat-raised-button color="warn" (click)="onDelete()" class="delete-button">
+              <mat-icon>delete</mat-icon>
+              Supprimer
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Details Card -->
+      <mat-card class="details-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">landscape</mat-icon>
+          <mat-card-title>Informations Générales</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="details-grid">
+            <div class="detail-item">
+              <div class="detail-label">
+                <mat-icon>tag</mat-icon>
+                <span>Identifiant</span>
+              </div>
+              <div class="detail-value">#{{ parcelle()!.id }}</div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-label">
+                <mat-icon>landscape</mat-icon>
+                <span>Nom de la Parcelle</span>
+              </div>
+              <div class="detail-value">{{ parcelle()!.nom }}</div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-label">
+                <mat-icon>square_foot</mat-icon>
+                <span>Superficie</span>
+              </div>
+              <div class="detail-value">
+                <span class="superficie-badge">{{ parcelle()!.superficie }} ha</span>
+              </div>
+            </div>
+
+            <div class="detail-item">
+              <div class="detail-label">
+                <mat-icon>spa</mat-icon>
+                <span>Type de Culture</span>
+              </div>
+              <div class="detail-value">
+                <mat-chip-set>
+                  <mat-chip class="culture-chip">{{ parcelle()!.culture }}</mat-chip>
+                </mat-chip-set>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Statistics Card -->
+      <mat-card class="stats-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="card-icon">analytics</mat-icon>
+          <mat-card-title>Statistiques</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-icon programmes-icon">
+                <mat-icon>water_drop</mat-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Programmes actifs</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon journal-icon">
+                <mat-icon>history</mat-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">0</div>
+                <div class="stat-label">Irrigations effectuées</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon volume-icon">
+                <mat-icon>opacity</mat-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">0 m³</div>
+                <div class="stat-label">Volume total d'eau</div>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon date-icon">
+                <mat-icon>calendar_today</mat-icon>
+              </div>
+              <div class="stat-content">
+                <div class="stat-value">-</div>
+                <div class="stat-label">Dernière irrigation</div>
+              </div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Related Data Placeholder -->
+      <div class="related-section">
+        <mat-card class="related-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="card-icon">list</mat-icon>
+            <mat-card-title>Programmes Associés</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="empty-state">
+              <mat-icon class="empty-icon">water_drop</mat-icon>
+              <p>Aucun programme d'irrigation associé</p>
+              <button mat-stroked-button color="primary">
+                <mat-icon>add</mat-icon>
+                Créer un programme
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card class="related-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar class="card-icon">book</mat-icon>
+            <mat-card-title>Historique des Irrigations</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="empty-state">
+              <mat-icon class="empty-icon">history</mat-icon>
+              <p>Aucune irrigation enregistrée</p>
+              <button mat-stroked-button color="primary">
+                <mat-icon>visibility</mat-icon>
+                Voir l'historique
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  } @else {
+    <div class="error-container">
+      <mat-icon class="error-icon">error_outline</mat-icon>
+      <h2>Parcelle introuvable</h2>
+      <p>La parcelle demandée n'existe pas ou a été supprimée.</p>
+      <button mat-raised-button color="primary" (click)="onBack()">
+        <mat-icon>arrow_back</mat-icon>
+        Retour à la liste
+      </button>
+    </div>
+  }
+</div>

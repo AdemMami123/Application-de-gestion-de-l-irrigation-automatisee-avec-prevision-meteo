@@ -1,0 +1,141 @@
+<div class="parcelle-list-container">
+  <div class="content-wrapper">
+    <!-- Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <div class="title-section">
+          <h1>Gestion des Parcelles</h1>
+          <p class="subtitle">Gérez vos parcelles agricoles</p>
+        </div>
+        <div class="header-actions">
+          <button mat-raised-button color="primary" (click)="navigateToCreate()" class="create-btn">
+            <mat-icon>add_circle</mat-icon>
+            Nouvelle Parcelle
+          </button>
+          <button mat-icon-button (click)="refresh()" matTooltip="Actualiser">
+            <mat-icon>refresh</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-icon matPrefix>search</mat-icon>
+        <mat-label>Rechercher une parcelle</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="searchQuery"
+          (ngModelChange)="onSearch()"
+          placeholder="Nom, culture, superficie...">
+        @if (searchQuery()) {
+          <button matSuffix mat-icon-button (click)="onClearSearch()">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    </div>
+
+    <!-- Content -->
+    @if (loading()) {
+      <div class="loading-state">
+        <mat-spinner diameter="60"></mat-spinner>
+        <p class="loading-text">Chargement des parcelles...</p>
+      </div>
+    } @else if (filteredParcelles().length > 0) {
+      <!-- Table -->
+      <div class="table-card">
+        <table mat-table [dataSource]="filteredParcelles()" class="parcelle-table">
+          
+          <!-- Nom Column -->
+          <ng-container matColumnDef="nom">
+            <th mat-header-cell *matHeaderCellDef>Nom de la Parcelle</th>
+            <td mat-cell *matCellDef="let parcelle">
+              <div class="cell-content">
+                <mat-icon class="cell-icon">agriculture</mat-icon>
+                <strong>{{ parcelle.nom }}</strong>
+              </div>
+            </td>
+          </ng-container>
+
+          <!-- Superficie Column -->
+          <ng-container matColumnDef="superficie">
+            <th mat-header-cell *matHeaderCellDef>Superficie</th>
+            <td mat-cell *matCellDef="let parcelle">
+              <span class="superficie-badge">{{ parcelle.superficie }} m²</span>
+            </td>
+          </ng-container>
+
+          <!-- Culture Column -->
+          <ng-container matColumnDef="culture">
+            <th mat-header-cell *matHeaderCellDef>Culture</th>
+            <td mat-cell *matCellDef="let parcelle">
+              <mat-chip class="culture-chip">{{ parcelle.culture }}</mat-chip>
+            </td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let parcelle">
+              <div class="action-buttons">
+                <button 
+                  mat-icon-button 
+                  class="action-btn view-btn"
+                  (click)="navigateToView(parcelle.id!)"
+                  matTooltip="Voir détails">
+                  <mat-icon>visibility</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  class="action-btn edit-btn"
+                  (click)="navigateToEdit(parcelle.id!)"
+                  matTooltip="Modifier">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button 
+                  mat-icon-button 
+                  class="action-btn delete-btn"
+                  (click)="deleteParcelle(parcelle)"
+                  matTooltip="Supprimer">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </div>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+        </table>
+      </div>
+    } @else {
+      <!-- Empty State -->
+      <div class="empty-state">
+        <div class="empty-icon">
+          <mat-icon>agriculture</mat-icon>
+        </div>
+        @if (searchQuery()) {
+          <h2>Aucun résultat trouvé</h2>
+          <p class="empty-message">
+            Aucune parcelle ne correspond à votre recherche "{{ searchQuery() }}".
+          </p>
+          <button mat-raised-button color="primary" (click)="onClearSearch()">
+            <mat-icon>clear</mat-icon>
+            Effacer la recherche
+          </button>
+        } @else {
+          <h2>Aucune parcelle</h2>
+          <p class="empty-message">
+            Vous n'avez pas encore créé de parcelle.<br>
+            Commencez par en créer une nouvelle.
+          </p>
+          <button mat-raised-button color="primary" (click)="navigateToCreate()">
+            <mat-icon>add_circle</mat-icon>
+            Créer une parcelle
+          </button>
+        }
+      </div>
+    }
+  </div>
+</div>

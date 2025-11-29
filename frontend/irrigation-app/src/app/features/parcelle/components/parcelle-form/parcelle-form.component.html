@@ -1,0 +1,130 @@
+<div class="parcelle-form-container">
+  <div class="content-wrapper">
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="header-content">
+        <button mat-icon-button (click)="onCancel()" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div class="header-text">
+          <h1>{{ isEditMode() ? 'Modifier la Parcelle' : 'Nouvelle Parcelle' }}</h1>
+          <p>{{ isEditMode() ? 'Modifiez les informations de la parcelle' : 'Créez une nouvelle parcelle pour votre exploitation' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <mat-card class="form-card">
+      <mat-card-content>
+        @if (loading()) {
+          <div class="loading-container">
+            <mat-spinner diameter="50"></mat-spinner>
+            <p>Chargement...</p>
+          </div>
+        } @else {
+          <form [formGroup]="parcelleForm" (ngSubmit)="onSubmit()" class="parcelle-form">
+            <!-- Nom de la Parcelle -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nom de la Parcelle</mat-label>
+              <mat-icon matPrefix>landscape</mat-icon>
+              <input 
+                matInput 
+                formControlName="nom" 
+                placeholder="Ex: Parcelle Nord A1"
+                autocomplete="off"
+              />
+              @if (parcelleForm.get('nom')?.touched && parcelleForm.get('nom')?.errors) {
+                <mat-error>{{ getErrorMessage('nom') }}</mat-error>
+              }
+              <mat-hint>Le nom doit contenir entre 3 et 100 caractères</mat-hint>
+            </mat-form-field>
+
+            <!-- Superficie -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Superficie (hectares)</mat-label>
+              <mat-icon matPrefix>square_foot</mat-icon>
+              <input 
+                matInput 
+                type="number" 
+                formControlName="superficie" 
+                placeholder="Ex: 5.5"
+                step="0.01"
+                min="0.01"
+                autocomplete="off"
+              />
+              @if (parcelleForm.get('superficie')?.touched && parcelleForm.get('superficie')?.errors) {
+                <mat-error>{{ getErrorMessage('superficie') }}</mat-error>
+              }
+              <mat-hint>Superficie en hectares (minimum 1m² = 0.0001 ha)</mat-hint>
+            </mat-form-field>
+
+            <!-- Type de Culture -->
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Type de Culture</mat-label>
+              <mat-icon matPrefix>spa</mat-icon>
+              <mat-select formControlName="culture" placeholder="Sélectionnez le type de culture">
+                @for (culture of typesCulture; track culture) {
+                  <mat-option [value]="culture">{{ culture }}</mat-option>
+                }
+              </mat-select>
+              @if (parcelleForm.get('culture')?.touched && parcelleForm.get('culture')?.errors) {
+                <mat-error>{{ getErrorMessage('culture') }}</mat-error>
+              }
+              <mat-hint>Sélectionnez le type de culture de la parcelle</mat-hint>
+            </mat-form-field>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button 
+                mat-stroked-button 
+                type="button" 
+                (click)="onCancel()"
+                class="cancel-button"
+              >
+                <mat-icon>close</mat-icon>
+                Annuler
+              </button>
+              
+              <button 
+                mat-raised-button 
+                color="primary" 
+                type="submit"
+                [disabled]="parcelleForm.invalid || loading()"
+                class="submit-button"
+              >
+                <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+                {{ isEditMode() ? 'Enregistrer' : 'Créer' }}
+              </button>
+            </div>
+          </form>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Information Card -->
+    <mat-card class="info-card">
+      <mat-card-header>
+        <mat-icon class="info-icon">info</mat-icon>
+        <mat-card-title>Informations</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-item">
+          <mat-icon>check_circle</mat-icon>
+          <p>Le nom de la parcelle doit être unique et descriptif</p>
+        </div>
+        <div class="info-item">
+          <mat-icon>check_circle</mat-icon>
+          <p>La superficie doit être exprimée en hectares</p>
+        </div>
+        <div class="info-item">
+          <mat-icon>check_circle</mat-icon>
+          <p>Le type de culture peut être modifié ultérieurement</p>
+        </div>
+        <div class="info-item">
+          <mat-icon>check_circle</mat-icon>
+          <p>Une fois créée, la parcelle pourra être associée à des programmes d'irrigation</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -34,7 +34,7 @@ public class GatewayRoutesConfig {
                 .route("arrosage-service", r -> r
                         .path("/api/arrosage/**")
                         .filters(f -> f
-                                .stripPrefix(1)  // Enlève /api du path
+                                .rewritePath("/api/arrosage/(?<segment>.*)", "/api/${segment}")
                                 .circuitBreaker(config -> config
                                         .setName("arrosageServiceCircuitBreaker")
                                         .setFallbackUri("forward:/fallback/arrosage"))

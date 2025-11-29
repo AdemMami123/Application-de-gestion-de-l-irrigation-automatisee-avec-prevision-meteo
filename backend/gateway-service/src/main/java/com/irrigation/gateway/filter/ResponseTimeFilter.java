@@ -20,28 +20,23 @@ public class ResponseTimeFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         // Enregistrer le temps de début
-        exchange.getAttributes().put(REQUEST_START_TIME_ATTR, System.currentTimeMillis());
+        long startTime = System.currentTimeMillis();
         
         return chain.filter(exchange)
-                .then(Mono.fromRunnable(() -> {
-                    Long startTime = exchange.getAttribute(REQUEST_START_TIME_ATTR);
-                    if (startTime != null) {
-                        long duration = System.currentTimeMillis() - startTime;
-                        String path = exchange.getRequest().getURI().getPath();
-                        String method = exchange.getRequest().getMethod().toString();
-                        
-                        // Ajouter le temps de réponse aux headers
-                        exchange.getResponse().getHeaders().add("X-Response-Time", duration + "ms");
-                        
-                        log.info("Request completed - Method: {}, Path: {}, Duration: {}ms", 
-                                method, path, duration);
-                        
-                        // Alerter si le temps de réponse est élevé
-                        if (duration > 5000) {
-                            log.warn("Slow request detected - Path: {}, Duration: {}ms", path, duration);
-                        }
+                .doFinally(signalType -> {
+                    long duration = System.currentTimeMillis() - startTime;
+                    String path = exchange.getRequest().getURI().getPath();
+                    String method = exchange.getRequest().getMethod().toString();
+                    
+                    // Log seulement (ne pas modifier les headers après commit)
+                    log.info("Request completed - Method: {}, Path: {}, Duration: {}ms", 
+                            method, path, duration);
+                    
+                    // Alerter si le temps de réponse est élevé
+                    if (duration > 5000) {
+                        log.warn("Slow request detected - Path: {}, Duration: {}ms", path, duration);
                     }
-                }));
+                });
     }
 
     @Override

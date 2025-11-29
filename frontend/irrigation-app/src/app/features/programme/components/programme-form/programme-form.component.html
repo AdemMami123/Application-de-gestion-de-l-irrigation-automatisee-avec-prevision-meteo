@@ -1,0 +1,147 @@
+<div class="programme-form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>
+        <mat-icon>{{ isEditMode() ? 'edit' : 'add' }}</mat-icon>
+        {{ isEditMode() ? 'Modifier le Programme' : 'Nouveau Programme d\'Arrosage' }}
+      </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="programmeForm" (ngSubmit)="onSubmit()">
+        <div class="form-grid">
+          
+          <!-- Parcelle Selection -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Parcelle</mat-label>
+            <mat-select formControlName="parcelleId" (selectionChange)="calculateVolume()">
+              @for (parcelle of parcelles(); track parcelle.id) {
+                <mat-option [value]="parcelle.id">
+                  {{ parcelle.nom }} - {{ parcelle.superficie }} ha ({{ parcelle.culture }})
+                </mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>grass</mat-icon>
+            @if (programmeForm.get('parcelleId')?.hasError('required') && programmeForm.get('parcelleId')?.touched) {
+              <mat-error>La parcelle est obligatoire</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Date Planifiée -->
+          <mat-form-field appearance="outline">
+            <mat-label>Date planifiée</mat-label>
+            <input matInput 
+                   [matDatepicker]="picker" 
+                   formControlName="datePlanifiee"
+                   placeholder="Sélectionner une date">
+            <mat-datepicker-toggle matIconPrefix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+            @if (programmeForm.get('datePlanifiee')?.hasError('required') && programmeForm.get('datePlanifiee')?.touched) {
+              <mat-error>La date est obligatoire</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Time Planifiée -->
+          <mat-form-field appearance="outline">
+            <mat-label>Heure planifiée</mat-label>
+            <input matInput 
+                   type="time" 
+                   formControlName="timePlanifiee"
+                   placeholder="HH:MM">
+            <mat-icon matPrefix>schedule</mat-icon>
+            @if (programmeForm.get('timePlanifiee')?.hasError('required') && programmeForm.get('timePlanifiee')?.touched) {
+              <mat-error>L'heure est obligatoire</mat-error>
+            }
+          </mat-form-field>
+
+          <!-- Volume Prévu -->
+          <mat-form-field appearance="outline">
+            <mat-label>Volume prévu (m³)</mat-label>
+            <input matInput 
+                   type="number" 
+                   step="0.01"
+                   formControlName="volumePrevu"
+                   (blur)="calculateDuration()"
+                   placeholder="0.00">
+            <mat-icon matPrefix>water_drop</mat-icon>
+            <span matSuffix>m³</span>
+            @if (programmeForm.get('volumePrevu')?.hasError('required') && programmeForm.get('volumePrevu')?.touched) {
+              <mat-error>Le volume est obligatoire</mat-error>
+            }
+            @if (programmeForm.get('volumePrevu')?.hasError('min')) {
+              <mat-error>Le volume doit être supérieur à 0</mat-error>
+            }
+            <mat-hint>Volume calculé automatiquement selon la parcelle</mat-hint>
+          </mat-form-field>
+
+          <!-- Durée -->
+          <mat-form-field appearance="outline">
+            <mat-label>Durée (minutes)</mat-label>
+            <input matInput 
+                   type="number" 
+                   formControlName="duree"
+                   placeholder="0">
+            <mat-icon matPrefix>timer</mat-icon>
+            <span matSuffix>min</span>
+            @if (programmeForm.get('duree')?.hasError('required') && programmeForm.get('duree')?.touched) {
+              <mat-error>La durée est obligatoire</mat-error>
+            }
+            @if (programmeForm.get('duree')?.hasError('min')) {
+              <mat-error>La durée doit être supérieure à 0</mat-error>
+            }
+            <mat-hint>Durée calculée selon le volume (débit: 0.5 m³/min)</mat-hint>
+          </mat-form-field>
+
+          <!-- Statut -->
+          <mat-form-field appearance="outline">
+            <mat-label>Statut</mat-label>
+            <mat-select formControlName="statut">
+              @for (statut of statutOptions; track statut) {
+                <mat-option [value]="statut">
+                  {{ statutLabels[statut] }}
+                </mat-option>
+              }
+            </mat-select>
+            <mat-icon matPrefix>flag</mat-icon>
+            @if (programmeForm.get('statut')?.hasError('required') && programmeForm.get('statut')?.touched) {
+              <mat-error>Le statut est obligatoire</mat-error>
+            }
+          </mat-form-field>
+
+        </div>
+
+        <!-- Info Card -->
+        <div class="info-card">
+          <mat-icon>info</mat-icon>
+          <div class="info-content">
+            <h4>Calcul automatique</h4>
+            <p>
+              Le volume est calculé automatiquement selon la superficie de la parcelle (5mm d'eau par m²).
+              La durée est calculée selon le volume avec un débit de 0.5 m³/min.
+              Vous pouvez modifier ces valeurs manuellement.
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button mat-raised-button 
+                  type="button" 
+                  (click)="cancel()"
+                  [disabled]="isSubmitting()">
+            <mat-icon>cancel</mat-icon>
+            Annuler
+          </button>
+          
+          <button mat-raised-button 
+                  color="primary" 
+                  type="submit"
+                  [disabled]="programmeForm.invalid || isSubmitting()">
+            <mat-icon>{{ isEditMode() ? 'save' : 'add' }}</mat-icon>
+            {{ isEditMode() ? 'Enregistrer' : 'Créer' }}
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

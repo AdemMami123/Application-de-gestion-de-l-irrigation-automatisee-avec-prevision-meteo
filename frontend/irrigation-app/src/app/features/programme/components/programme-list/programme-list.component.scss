@@ -1,0 +1,209 @@
+.programme-list-container {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  .header-card {
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+
+    mat-card-header {
+      margin-bottom: 16px;
+    }
+
+    mat-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 600;
+
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    .filters-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+
+      .search-field {
+        flex: 1;
+        min-width: 300px;
+      }
+
+      .statut-field {
+        min-width: 200px;
+      }
+
+      .create-button {
+        height: 56px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      ::ng-deep {
+        .mat-mdc-form-field {
+          .mat-mdc-text-field-wrapper {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+          }
+
+          .mat-mdc-form-field-focus-overlay {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+  }
+
+  .table-card {
+    overflow: hidden;
+
+    .table-container {
+      overflow-x: auto;
+
+      .programmes-table {
+        width: 100%;
+        background-color: white;
+
+        th {
+          background-color: #f5f5f5;
+          font-weight: 600;
+          font-size: 14px;
+          color: #333;
+          padding: 16px;
+        }
+
+        td {
+          padding: 16px;
+          font-size: 14px;
+        }
+
+        .programme-row {
+          transition: background-color 0.2s ease;
+          cursor: pointer;
+
+          &:hover {
+            background-color: #f9fafb;
+          }
+        }
+
+        .parcelle-cell,
+        .date-cell,
+        .duration-cell,
+        .volume-cell {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            color: #666;
+          }
+        }
+
+        .statut-chip {
+          font-size: 12px;
+          font-weight: 500;
+          padding: 4px 12px;
+          border-radius: 12px;
+
+          &.statut-planifie {
+            background-color: #e3f2fd;
+            color: #1976d2;
+          }
+
+          &.statut-en_cours {
+            background-color: #fff3e0;
+            color: #f57c00;
+          }
+
+          &.statut-termine {
+            background-color: #e8f5e9;
+            color: #388e3c;
+          }
+
+          &.statut-annule {
+            background-color: #ffebee;
+            color: #d32f2f;
+          }
+        }
+
+        .actions-cell {
+          display: flex;
+          gap: 4px;
+
+          button {
+            &:hover {
+              transform: scale(1.1);
+              transition: transform 0.2s ease;
+            }
+          }
+        }
+      }
+
+      .no-data {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 48px;
+        color: #999;
+
+        mat-icon {
+          font-size: 64px;
+          width: 64px;
+          height: 64px;
+          margin-bottom: 16px;
+          opacity: 0.5;
+        }
+
+        p {
+          font-size: 18px;
+          margin-bottom: 24px;
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .programme-list-container {
+    padding: 16px;
+
+    .header-card {
+      .filters-row {
+        flex-direction: column;
+        align-items: stretch;
+
+        .search-field,
+        .statut-field,
+        .create-button {
+          width: 100%;
+        }
+      }
+    }
+
+    .programmes-table {
+      .parcelle-cell,
+      .date-cell,
+      .duration-cell,
+      .volume-cell {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+      }
+    }
+  }
+}

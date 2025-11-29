@@ -1,0 +1,169 @@
+<div class="programme-details-container">
+  @if (isLoading()) {
+    <div class="loading-spinner">
+      <mat-icon>hourglass_empty</mat-icon>
+      <p>Chargement...</p>
+    </div>
+  }
+
+  @if (!isLoading() && programme()) {
+    <!-- Header Card -->
+    <mat-card class="header-card">
+      <div class="header-content">
+        <div class="title-section">
+          <mat-icon class="header-icon">calendar_today</mat-icon>
+          <div>
+            <h1>Programme d'Arrosage #{{ programme()!.id }}</h1>
+            <p class="subtitle">{{ programme()!.parcelleNom }}</p>
+          </div>
+        </div>
+        
+        <mat-chip [class]="'statut-chip statut-' + programme()!.statut.toLowerCase()">
+          {{ statutLabels[programme()!.statut] }}
+        </mat-chip>
+      </div>
+
+      <div class="action-buttons">
+        <button mat-button (click)="goBack()">
+          <mat-icon>arrow_back</mat-icon>
+          Retour
+        </button>
+        <button mat-raised-button color="primary" (click)="editProgramme()">
+          <mat-icon>edit</mat-icon>
+          Modifier
+        </button>
+        <button mat-raised-button color="warn" (click)="deleteProgramme()">
+          <mat-icon>delete</mat-icon>
+          Supprimer
+        </button>
+      </div>
+    </mat-card>
+
+    <div class="details-grid">
+      
+      <!-- Planning Information -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>schedule</mat-icon>
+            Planification
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <div class="info-label">
+              <mat-icon>event</mat-icon>
+              Date planifiée
+            </div>
+            <div class="info-value">{{ formatDate(programme()!.datePlanifiee) }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">
+              <mat-icon>access_time</mat-icon>
+              Heure
+            </div>
+            <div class="info-value">{{ formatTime(programme()!.datePlanifiee) }}</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">
+              <mat-icon>timer</mat-icon>
+              Durée prévue
+            </div>
+            <div class="info-value">{{ programme()!.duree }} minutes</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Water Information -->
+      <mat-card class="info-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>water_drop</mat-icon>
+            Eau
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="info-row">
+            <div class="info-label">
+              <mat-icon>opacity</mat-icon>
+              Volume prévu
+            </div>
+            <div class="info-value">{{ programme()!.volumePrevu }} m³</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">
+              <mat-icon>speed</mat-icon>
+              Débit moyen
+            </div>
+            <div class="info-value">{{ calculateDebit().toFixed(2) }} m³/min</div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="info-row">
+            <div class="info-label">
+              <mat-icon>calculate</mat-icon>
+              Équivalent
+            </div>
+            <div class="info-value">{{ (programme()!.volumePrevu * 1000).toFixed(0) }} litres</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Parcelle Information -->
+      <mat-card class="info-card parcelle-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>grass</mat-icon>
+            Parcelle
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="parcelle-info">
+            <div class="parcelle-name">{{ programme()!.parcelleNom }}</div>
+            <button mat-button color="primary" (click)="viewParcelle()">
+              <mat-icon>visibility</mat-icon>
+              Voir la parcelle
+            </button>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Statistics Card -->
+      <mat-card class="stats-card">
+        <mat-card-header>
+          <mat-card-title>
+            <mat-icon>analytics</mat-icon>
+            Statistiques
+          </mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <mat-icon>local_drink</mat-icon>
+              <div class="stat-value">{{ programme()!.volumePrevu }}</div>
+              <div class="stat-label">m³ d'eau</div>
+            </div>
+            <div class="stat-item">
+              <mat-icon>schedule</mat-icon>
+              <div class="stat-value">{{ programme()!.duree }}</div>
+              <div class="stat-label">minutes</div>
+            </div>
+            <div class="stat-item">
+              <mat-icon>speed</mat-icon>
+              <div class="stat-value">{{ calculateDebit().toFixed(2) }}</div>
+              <div class="stat-label">m³/min</div>
+            </div>
+            <div class="stat-item">
+              <mat-icon>water</mat-icon>
+              <div class="stat-value">{{ (programme()!.volumePrevu * 1000).toFixed(0) }}</div>
+              <div class="stat-label">litres</div>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+    </div>
+  }
+</div>
