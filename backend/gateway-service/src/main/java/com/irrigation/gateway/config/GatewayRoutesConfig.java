@@ -16,6 +16,19 @@ public class GatewayRoutesConfig {
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
         return builder.routes()
+                // Route vers Auth Service
+                .route("auth-service", r -> r
+                        .path("/api/auth/**")
+                        .filters(f -> f
+                                .circuitBreaker(config -> config
+                                        .setName("authServiceCircuitBreaker")
+                                        .setFallbackUri("forward:/fallback/auth"))
+                                .retry(retryConfig -> retryConfig
+                                        .setRetries(3)
+                                        .setMethods(HttpMethod.GET))
+                        )
+                        .uri("lb://auth-service"))  // Load balanced via Eureka
+                
                 // Route vers Meteo Service
                 .route("meteo-service", r -> r
                         .path("/api/meteo/**")

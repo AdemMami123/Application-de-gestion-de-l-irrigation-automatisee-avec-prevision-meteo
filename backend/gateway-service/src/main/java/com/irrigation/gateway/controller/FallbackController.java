@@ -39,6 +39,17 @@ public class FallbackController {
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
     }
 
+    @GetMapping("/auth")
+    public ResponseEntity<Map<String, Object>> authFallback() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("status", "SERVICE_UNAVAILABLE");
+        response.put("message", "Authentication service is temporarily unavailable. Please try again later.");
+        response.put("service", "auth-service");
+        response.put("timestamp", System.currentTimeMillis());
+        
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(response);
+    }
+
     @GetMapping("/default")
     public ResponseEntity<Map<String, Object>> defaultFallback() {
         Map<String, Object> response = new HashMap<>();

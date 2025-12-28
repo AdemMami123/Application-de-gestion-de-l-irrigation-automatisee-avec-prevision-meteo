@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-server-config
+  namespace: irrigation-system
+data:
+  SPRING_APPLICATION_NAME: "config-server"
+  SERVER_PORT: "8888"
+  SPRING_PROFILES_ACTIVE: "native"
+  SPRING_CLOUD_CONFIG_SERVER_NATIVE_SEARCH_LOCATIONS: "classpath:/config"
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://eureka-server:8761/eureka/"
+  EUREKA_INSTANCE_PREFER_IP_ADDRESS: "false"
+  EUREKA_INSTANCE_HOSTNAME: "config-server"
+  MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE: "health,info,refresh"
+  MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS: "always"

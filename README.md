@@ -220,12 +220,57 @@ L'application sera accessible sur http://localhost:4200
 
 ### DevOps
 - Docker & Docker Compose
+- Kubernetes
 - Maven
 - Git
+
+## ☸️ Déploiement Kubernetes
+
+Le projet inclut des configurations Kubernetes complètes pour un déploiement en production.
+
+### Déploiement Rapide
+
+```powershell
+# Naviguer vers le dossier Kubernetes
+cd k8s
+
+# Déployer tous les composants
+.\deploy-k8s.ps1 -Action deploy
+
+# Vérifier le statut
+.\deploy-k8s.ps1 -Action status
+
+# Voir les logs d'un service
+kubectl logs -l app=meteo-service -n irrigation-system --tail=100 -f
+```
+
+### Accès aux Services
+
+Une fois déployé, les services sont accessibles via:
+
+- **API Gateway**: http://irrigation.local/api
+- **Eureka Dashboard**: http://irrigation.local/eureka
+- **Config Server**: http://irrigation.local/config
+
+**Note**: Ajoutez `127.0.0.1 irrigation.local` à votre fichier hosts (`C:\Windows\System32\drivers\etc\hosts`)
+
+### Structure Kubernetes
+
+Le dossier `k8s/` contient:
+- **Namespace**: Isolation des ressources
+- **ConfigMaps**: Configuration non-sensible
+- **Secrets**: Credentials et données sensibles
+- **PersistentVolumeClaims**: Stockage persistant pour bases de données
+- **Deployments**: Définitions des applications
+- **Services**: Service discovery interne
+- **Ingress**: Accès externe avec routage
+
+Pour plus de détails, consultez le [Guide Kubernetes](./k8s/README.md)
 
 ## 📚 Documentation Supplémentaire
 
 - [Guide de Configuration IDE](./docs/IDE_SETUP.md)
+- [Guide Kubernetes](./k8s/README.md) ✅ **Nouveau**
 - [Architecture Détaillée](./docs/ARCHITECTURE.md) (à venir)
 - [Guide de Développement](./docs/DEVELOPMENT.md) (à venir)
 - [Guide de Déploiement](./docs/DEPLOYMENT.md) (à venir)

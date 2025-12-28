@@ -68,6 +68,10 @@ import { AuthService } from '../../../core/services/auth.service';
           </form>
         </mat-card-content>
 
+        <mat-card-actions class="card-actions">
+          <p>Pas encore de compte ? <a routerLink="/register">Créer un compte</a></p>
+        </mat-card-actions>
+
         <mat-card-footer>
           <p class="footer-text">Version 1.0.0 - Système d'irrigation automatisé</p>
         </mat-card-footer>
@@ -126,6 +130,28 @@ import { AuthService } from '../../../core/services/auth.service';
       width: 100%;
     }
 
+    .card-actions {
+      text-align: center;
+      padding: 16px;
+      border-top: 1px solid #eee;
+
+      p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+      }
+
+      a {
+        color: #673ab7;
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
     .footer-text {
       text-align: center;
       font-size: 12px;
@@ -162,30 +188,17 @@ export class LoginComponent {
     this.loading.set(true);
     const credentials = this.loginForm.value;
 
-    // TODO: Implement real authentication
-    // For now, simulate login
-    setTimeout(() => {
-      localStorage.setItem('irrigation_auth_token', 'demo-token');
-      localStorage.setItem('irrigation_user', JSON.stringify({
-        username: credentials.username,
-        roles: ['ADMIN']
-      }));
-      
-      this.loading.set(false);
-      this.router.navigate(['/dashboard']);
-    }, 1000);
-
-    /* Real implementation:
     this.authService.login(credentials).subscribe({
-      next: () => {
+      next: (response) => {
         this.loading.set(false);
+        this.snackBar.open(`Welcome, ${response.user.username}!`, 'Close', { duration: 3000 });
         this.router.navigate(['/dashboard']);
       },
       error: (err) => {
         this.loading.set(false);
-        this.snackBar.open('Identifiants invalides', 'Fermer', { duration: 3000 });
+        const message = err.message || 'Invalid credentials';
+        this.snackBar.open(message, 'Close', { duration: 5000 });
       }
     });
-    */
   }
 }

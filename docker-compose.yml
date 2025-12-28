@@ -126,6 +126,26 @@ services:
       timeout: 5s
       retries: 5
 
+  # PostgreSQL for Auth Service
+  postgres-auth:
+    image: postgres:15-alpine
+    container_name: postgres-auth
+    environment:
+      POSTGRES_DB: authdb
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_pass
+    ports:
+      - "5434:5432"
+    volumes:
+      - auth-data:/var/lib/postgresql/data
+    networks:
+      - irrigation-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U auth_user -d authdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   # Meteo Service - Weather Forecast Management
   meteo-service:
     build:
@@ -189,6 +209,40 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8082/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  # Auth Service - Authentication & Authorization
+  auth-service:
+    build:
+      context: ./backend/auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "8083:8083"
+    networks:
+      - irrigation-network
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-auth:5432/authdb
+      - SPRING_DATASOURCE_USERNAME=auth_user
+      - SPRING_DATASOURCE_PASSWORD=auth_pass
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka/
+      - JWT_SECRET=IrrigationSecretKey2024!@#$%^&*()VeryLongSecretKeyForJWT
+      - JWT_EXPIRATION=86400000
+      - JWT_REFRESH_EXPIRATION=604800000
+      - APP_ADMIN_USERNAME=admin
+      - APP_ADMIN_PASSWORD=admin123
+      - APP_ADMIN_EMAIL=admin@irrigation.local
+    depends_on:
+      eureka-server:
+        condition: service_healthy
+      postgres-auth:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8083/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -350,6 +404,8 @@ volumes:
   meteo-data:
     driver: local
   arrosage-data:
+    driver: local
+  auth-data:
     driver: local
   redis-data:
     driver: local

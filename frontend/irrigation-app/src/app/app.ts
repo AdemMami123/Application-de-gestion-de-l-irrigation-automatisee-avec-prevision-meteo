@@ -57,4 +57,14 @@ export class App {
   get currentUser() {
     return this.authService.getCurrentUser();
   }
+
+  get userRole(): string {
+    const user = this.authService.getCurrentUser();
+    return user?.roles?.[0] || '';
+  }
+
+  get userRoles(): string {
+    const user = this.authService.getCurrentUser();
+    return user?.roles?.join(', ') || '';
+  }
 }

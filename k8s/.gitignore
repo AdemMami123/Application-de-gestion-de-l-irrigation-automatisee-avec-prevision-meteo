@@ -1,0 +1,29 @@
+# Ignore any local overrides or environment-specific configurations
+*.local.yaml
+*-local.yaml
+
+# Ignore backup files
+*.backup
+*.bak
+
+# Ignore generated certificates
+*.crt
+*.key
+*.pem
+
+# Ignore local values files (for Helm if you add it later)
+values-local.yaml
+values-*.local.yaml
+
+# Ignore kubeconfig files
+kubeconfig
+*.kubeconfig
+
+# Ignore any temporary files
+*.tmp
+*.temp
+~*
+
+# Note: secrets/*.yaml files are tracked but contain base64 encoded placeholder values
+# Make sure to update these with real values before deploying to production
+# and never commit actual production secrets to version control
